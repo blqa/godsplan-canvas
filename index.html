@@ -2,8 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- STRICT NO-CACHE POLICY -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>God's Plan | Canvas</title>
+    <meta name="robots" content="noindex, nofollow">
+    
+    <title>God's Plan | Secure Canvas</title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -281,6 +287,25 @@
             // Resizing State
             const [isDraggingH, setIsDraggingH] = useState(false);
 
+            // --- STRICT DATA CLEARING FUNCTION ---
+            const handleHardReset = () => {
+                if (confirm("¿ESTÁS SEGURO? Se borrarán cookies, caché de sesión y se recargará la página. Todo el código no guardado se perderá.")) {
+                    // 1. Limpiar LocalStorage y SessionStorage
+                    try {
+                        localStorage.clear();
+                        sessionStorage.clear();
+                    } catch(e) { console.error("Storage clear error", e); }
+
+                    // 2. Limpiar Cookies (Método agresivo)
+                    document.cookie.split(";").forEach((c) => {
+                        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                    });
+
+                    // 3. Forzar recarga sin añadir al historial (Replace en lugar de reload)
+                    window.location.replace(window.location.href);
+                }
+            };
+
             // 1. Monaco Setup
             useEffect(() => {
                 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
@@ -414,10 +439,16 @@
                     {/* Header */}
                     <header className="h-10 bg-[#1e1e1e] border-b border-[#333] flex items-center justify-between px-4 shrink-0 z-20">
                         <div className="flex items-center gap-3">
-                            <span className="text-xs font-bold text-gray-300 tracking-wide">GOD'S PLAN <span className="opacity-50">| F12 EDITION</span></span>
+                            <span className="text-xs font-bold text-gray-300 tracking-wide">GOD'S PLAN <span className="opacity-50">| SECURE CANVAS</span></span>
                         </div>
-                        <div className="flex items-center gap-2">
-                             <button onClick={() => setIsInspectorActive(!isInspectorActive)}
+                        <div className="flex items-center gap-3">
+                            <button onClick={handleHardReset}
+                                className="flex items-center gap-2 px-3 py-1 text-xs font-bold rounded transition-all bg-red-900/40 border border-red-500/50 text-red-400 hover:bg-red-600 hover:text-white">
+                                <i className="ph-bold ph-trash"></i>
+                                RESET & LIMPIAR
+                            </button>
+                            <div className="w-[1px] h-4 bg-gray-700 mx-1"></div>
+                            <button onClick={() => setIsInspectorActive(!isInspectorActive)}
                                 className={`flex items-center gap-2 px-3 py-1 text-xs font-medium rounded transition-all border ${isInspectorActive ? 'bg-blue-900/30 text-blue-400 border-blue-500/50 animate-inspect' : 'bg-[#2d2d2d] border-transparent text-gray-400'}`}>
                                 <i className={`ph-bold ${isInspectorActive ? 'ph-crosshair' : 'ph-cursor-click'}`}></i>
                                 {isInspectorActive ? 'DETECTANDO...' : 'INSPECCIONAR'}
