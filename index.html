@@ -272,6 +272,7 @@
         const App = () => {
             const [code, setCode] = useState(DEFAULT_CODE);
             const [logs, setLogs] = useState([]);
+            const [showResetModal, setShowResetModal] = useState(false);
             
             // Layout State
             const [previewWidth, setPreviewWidth] = useState(50); // El % es para la izquierda (preview)
@@ -288,22 +289,20 @@
             const [isDraggingH, setIsDraggingH] = useState(false);
 
             // --- STRICT DATA CLEARING FUNCTION ---
-            const handleHardReset = () => {
-                if (confirm("¿ESTÁS SEGURO? Se borrarán cookies, caché de sesión y se recargará la página. Todo el código no guardado se perderá.")) {
-                    // 1. Limpiar LocalStorage y SessionStorage
-                    try {
-                        localStorage.clear();
-                        sessionStorage.clear();
-                    } catch(e) { console.error("Storage clear error", e); }
+            const performHardReset = () => {
+                // 1. Limpiar LocalStorage y SessionStorage
+                try {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                } catch(e) { console.error("Storage clear error", e); }
 
-                    // 2. Limpiar Cookies (Método agresivo)
-                    document.cookie.split(";").forEach((c) => {
-                        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-                    });
+                // 2. Limpiar Cookies (Método agresivo)
+                document.cookie.split(";").forEach((c) => {
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                });
 
-                    // 3. Forzar recarga sin añadir al historial (Replace en lugar de reload)
-                    window.location.replace(window.location.href);
-                }
+                // 3. Forzar recarga sin añadir al historial (Replace en lugar de reload)
+                window.location.replace(window.location.href);
             };
 
             // 1. Monaco Setup
@@ -434,15 +433,45 @@
             };
 
             return (
-                <div className="flex flex-col h-screen w-full bg-bg text-[#cccccc] font-sans select-none overflow-hidden">
+                <div className="flex flex-col h-screen w-full bg-bg text-[#cccccc] font-sans select-none overflow-hidden relative">
                     
+                    {/* --- CUSTOM MODAL --- */}
+                    {showResetModal && (
+                        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                            <div className="bg-[#252526] border border-red-500/50 p-6 rounded-lg shadow-2xl max-w-md w-full mx-4 animate-bounce-in">
+                                <h3 className="text-red-400 text-lg font-bold mb-2 flex items-center gap-2">
+                                    <i className="ph-fill ph-warning"></i> ZONA DE PELIGRO
+                                </h3>
+                                <p className="text-gray-300 mb-6 text-sm leading-relaxed border-t border-red-500/20 pt-2">
+                                    ¿ESTÁS SEGURO? Se borrarán cookies, caché de sesión y se recargará la página. <br/><br/>
+                                    <span className="text-red-400 font-bold">Todo el código no guardado se perderá irreversiblemente.</span>
+                                </p>
+                                <div className="flex justify-end gap-3">
+                                    <button 
+                                        onClick={() => setShowResetModal(false)}
+                                        className="px-4 py-2 rounded text-sm font-medium text-gray-400 hover:text-white hover:bg-[#333] transition-colors"
+                                    >
+                                        CANCELAR
+                                    </button>
+                                    <button 
+                                        onClick={performHardReset}
+                                        className="px-4 py-2 rounded text-sm font-bold bg-red-600 hover:bg-red-700 text-white shadow-lg transition-colors flex items-center gap-2"
+                                    >
+                                        <i className="ph-bold ph-skull"></i>
+                                        BORRAR TODO Y RECARGAR
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Header */}
                     <header className="h-10 bg-[#1e1e1e] border-b border-[#333] flex items-center justify-between px-4 shrink-0 z-20">
                         <div className="flex items-center gap-3">
                             <span className="text-xs font-bold text-gray-300 tracking-wide">GOD'S PLAN <span className="opacity-50">| SECURE CANVAS</span></span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <button onClick={handleHardReset}
+                            <button onClick={() => setShowResetModal(true)}
                                 className="flex items-center gap-2 px-3 py-1 text-xs font-bold rounded transition-all bg-red-900/40 border border-red-500/50 text-red-400 hover:bg-red-600 hover:text-white">
                                 <i className="ph-bold ph-trash"></i>
                                 RESET & LIMPIAR
