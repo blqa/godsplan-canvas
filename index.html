@@ -82,6 +82,8 @@
         .console-error { background: rgba(255, 0, 0, 0.1); color: #ff8080; border-left: 3px solid #ff8080; }
         .console-input:focus { outline: none; }
     </style>
+    <link rel="icon" type="image/svg+xml" data-gp href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%230a0a0a'/%3E%3Cpath%20d='M28%2010h8v16h16v8H36v22h-8V34H12v-8h16z'%20fill='%238a0303'/%3E%3C/svg%3E">
+    <meta name="theme-color" content="#0a0a0a" data-gp>
 </head>
 <body>
     <div id="root"></div>
@@ -468,7 +470,7 @@
                     {/* Header */}
                     <header className="h-10 bg-[#1e1e1e] border-b border-[#333] flex items-center justify-between px-4 shrink-0 z-20">
                         <div className="flex items-center gap-3">
-                            <span className="text-xs font-bold text-gray-300 tracking-wide">GOD'S PLAN <span className="opacity-50">| SECURE CANVAS</span></span>
+                            <a href="https://godsplan.site" target="_blank" rel="noopener" className="text-xs font-bold text-gray-300 tracking-wide hover:text-white transition-colors">GOD'S PLAN <span className="opacity-50">| SECURE CANVAS</span></a>
                         </div>
                         <div className="flex items-center gap-3">
                             <button onClick={() => setShowResetModal(true)}
